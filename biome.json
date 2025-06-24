@@ -11,6 +11,8 @@
       "package.json",
       "apps/frontend/src/**",
       "apps/backend/src/**",
+      "apps/frontend/package.json",
+      "apps/backend/package.json",
       "!apps/frontend/src/routeTree.gen.ts",
       "!apps/backend/src/generated/prisma/**"
     ]

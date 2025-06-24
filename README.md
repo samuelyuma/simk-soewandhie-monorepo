@@ -69,9 +69,9 @@ docker-compose up -d --build
 - Buka `http://localhost:8080/` untuk mengakses **backend**
 - Buka `http://localhost:8080/api/docs` untuk mengakses halaman dokumentasi API
 
-### Seeding Database
+### Migrate and Seed Database
 
-Untuk melakukan seeding database:
+Masuk ke container database:
 
 ```sh
 docker exec -it simk-soewandhie-backend sh
@@ -80,7 +80,7 @@ docker exec -it simk-soewandhie-backend sh
 Setelah masuk ke dalam container:
 
 ```sh
-bun run prisma:seed
+bun run prisma:deploy && bun run prisma:seed
 ```
 
 Untuk keluar dari container, gunakan command `exit`
