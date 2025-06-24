@@ -1,0 +1,89 @@
+model Event {
+    id   Int      @id @default(autoincrement())
+    nama String   @db.VarChar(100)
+    tgl  DateTime
+
+    created_at DateTime  @default(now())
+    updated_at DateTime  @default(now()) @updatedAt
+    deleted_at DateTime?
+
+    list_rekening Rekening[]
+
+    @@map("event")
+}
+
+model Kegiatan {
+    id Int @id @default(autoincrement())
+
+    kode String @db.VarChar(25)
+    nama String @db.VarChar(100)
+
+    created_at DateTime  @default(now())
+    updated_at DateTime  @default(now()) @updatedAt
+    deleted_at DateTime?
+
+    list_sub_kegiatan SubKegiatan[]
+    list_npd          Npd[]
+
+    @@map("kegiatan")
+}
+
+model SubKegiatan {
+    id          Int    @id @default(autoincrement())
+    user_id     String
+    kegiatan_id Int
+
+    kode String @db.VarChar(25)
+    nama String @db.VarChar(100)
+
+    created_at DateTime  @default(now())
+    updated_at DateTime  @default(now()) @updatedAt
+    deleted_at DateTime?
+
+    user     User     @relation(fields: [user_id], references: [id])
+    kegiatan Kegiatan @relation(fields: [kegiatan_id], references: [id])
+
+    list_npd      Npd[]
+    list_rekening Rekening[]
+
+    @@map("sub_kegiatan")
+}
+
+model Rekening {
+    id              Int @id @default(autoincrement())
+    sub_kegiatan_id Int
+    event_id        Int
+
+    kode String @db.VarChar(25)
+    nama String @db.VarChar(100)
+
+    created_at DateTime  @default(now())
+    updated_at DateTime  @default(now()) @updatedAt
+    deleted_at DateTime?
+
+    sub_kegiatan SubKegiatan @relation(fields: [sub_kegiatan_id], references: [id])
+    event        Event       @relation(fields: [event_id], references: [id])
+
+    list_rincian_objek RincianObjek[]
+
+    @@map("rekening")
+}
+
+model RincianObjek {
+    id          Int @id @default(autoincrement())
+    rekening_id Int
+
+    nama              String @db.VarChar(255)
+    nominal_anggaran  BigInt
+    nominal_realisasi BigInt @default(0)
+
+    created_at DateTime  @default(now())
+    updated_at DateTime  @default(now()) @updatedAt
+    deleted_at DateTime?
+
+    rekening Rekening @relation(fields: [rekening_id], references: [id])
+
+    list_alokasi_item ItemRincianNpd[]
+
+    @@map("rincian_objek")
+}

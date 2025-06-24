@@ -1,0 +1,56 @@
+{
+  "name": "simk-soewandhie-monorepo",
+  "version": "1.0.0",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "bun --filter '*' dev",
+    "build": "bun --filter '*' build",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint --write .",
+    "format": "biome format .",
+    "format:fix": "biome format --write .",
+    "check": "biome check .",
+    "check:fix": "biome check --write .",
+    "frontend": "bun run --filter simk-soewandhie-frontend",
+    "frontend:build": "bun frontend build",
+    "frontend:preview": "bun frontend preview",
+    "backend": "bun run --filter simk-soewandhie-backend",
+    "backend:docker-build": "bun backend build:docker",
+    "prisma:seed": "bun backend prisma:seed",
+    "prisma:new": "bun backend prisma:new",
+    "prisma:pull": "bun backend prisma:pull",
+    "prisma:push": "bun backend prisma:push",
+    "prisma:deploy": "bun backend prisma:deploy",
+    "prisma:generate": "bun backend prisma:generate",
+    "docker:dev": "docker-compose up -d",
+    "docker:deploy": "docker-compose -f docker-compose-deploy.yml up -d --build",
+    "prepare": "husky"
+  },
+  "trustedDependencies": [
+    "@prisma/client",
+    "@prisma/engines",
+    "prisma"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "@biomejs/biome": "2.0.5",
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.2"
+  },
+  "lint-staged": {
+    "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}": [
+      "biome check --files-ignore-unknown=true",
+      "biome check --write --no-errors-on-unmatched",
+      "biome check --write --unsafe --no-errors-on-unmatched",
+      "biome format --write --no-errors-on-unmatched",
+      "biome lint --write --no-errors-on-unmatched"
+    ],
+    "*": [
+      "biome check --no-errors-on-unmatched --files-ignore-unknown=true"
+    ]
+  }
+}

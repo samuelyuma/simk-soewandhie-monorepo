@@ -1,0 +1,57 @@
+services:
+  database:
+    container_name: postgres
+    image: postgres:alpine
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - ${POSTGRES_PORT}:5432
+    expose:
+      - ${POSTGRES_PORT}
+    volumes:
+      - ./docker/volumes/:/var/lib/postgresql/data
+    networks:
+      - simk-soewandhie-network
+
+  backend:
+    container_name: simk-soewandhie-backend
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - ${BE_PORT}:${BE_PORT}
+    expose:
+      - ${BE_PORT}
+    depends_on:
+      - database
+    networks:
+      - simk-soewandhie-network
+
+  frontend:
+    container_name: simk-soewandhie-frontend
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - '3000:3000'
+    expose:
+      - '3000'
+    depends_on:
+      - backend
+    networks:
+      - simk-soewandhie-network
+
+networks:
+  simk-soewandhie-network:
+    driver: bridge
+
+volumes:
+  data:
+    name: simk-soewhandie-data

@@ -1,0 +1,81 @@
+model Npd {
+    id              Int    @id @default(autoincrement())
+    kpa_id          String
+    kegiatan_id     Int
+    sub_kegiatan_id Int
+
+    program String @db.VarChar(255)
+    no_dpa  String @db.VarChar(50)
+    tahun   Int
+
+    created_at DateTime  @default(now())
+    updated_at DateTime  @default(now()) @updatedAt
+    deleted_at DateTime?
+
+    kpa          User        @relation(fields: [kpa_id], references: [id])
+    kegiatan     Kegiatan    @relation(fields: [kegiatan_id], references: [id])
+    sub_kegiatan SubKegiatan @relation(fields: [sub_kegiatan_id], references: [id])
+
+    list_rincian_npd NpdRincian[]
+
+    @@map("npd")
+}
+
+model NpdRincian {
+    id      Int    @id @default(autoincrement())
+    npd_id  Int
+    pptk_id String
+
+    no        Int
+    is_panjar Boolean
+    is_fix    Boolean @default(false)
+    keperluan String? @db.VarChar(255)
+
+    alasan_batal String?   @db.VarChar(255)
+    batal_pada   DateTime?
+
+    created_at DateTime  @default(now())
+    updated_at DateTime  @default(now()) @updatedAt
+    deleted_at DateTime?
+
+    npd  Npd  @relation(fields: [npd_id], references: [id])
+    pptk User @relation(fields: [pptk_id], references: [id])
+
+    list_item_rincian_npd ItemRincianNpd[]
+    list_lpj              Lpj[]
+
+    @@map("npd_rincian")
+}
+
+model ItemRincianNpd {
+    id               Int @id @default(autoincrement())
+    npd_rincian_id   Int
+    rincian_objek_id Int
+
+    created_at DateTime  @default(now())
+    updated_at DateTime  @default(now()) @updatedAt
+    deleted_at DateTime?
+
+    npd_rincian   NpdRincian   @relation(fields: [npd_rincian_id], references: [id])
+    rincian_objek RincianObjek @relation(fields: [rincian_objek_id], references: [id])
+
+    list_pencairan Pencairan[]
+
+    @@map("item_rincian_npd")
+}
+
+model Pencairan {
+    id                  Int @id @default(autoincrement())
+    item_rincian_npd_id Int
+
+    tanggal DateTime @default(now())
+    nominal BigInt
+
+    created_at DateTime  @default(now())
+    updated_at DateTime  @default(now()) @updatedAt
+    deleted_at DateTime?
+
+    item_rincian_npd ItemRincianNpd @relation(fields: [item_rincian_npd_id], references: [id])
+
+    @@map("pencairan")
+}

@@ -1,0 +1,55 @@
+enum Role {
+    ADMIN
+    SUPERADMIN
+}
+
+model User {
+    id        String  @id @db.VarChar(18)
+    nama      String  @db.VarChar(100)
+    username  String  @unique @db.VarChar(25)
+    password  String  @db.VarChar(72)
+    nip       String  @db.VarChar(20)
+    is_active Boolean @default(true)
+    role      Role    @default(ADMIN)
+
+    created_at DateTime  @default(now())
+    updated_at DateTime  @updatedAt
+    deleted_at DateTime?
+
+    list_mapping_jabatan  UserJabatan[]
+    list_sub_kegiatan     SubKegiatan[]
+    list_npd_kpa          Npd[]
+    list_npd_rincian_pptk NpdRincian[]
+
+    @@map("pengguna")
+}
+
+model Jabatan {
+    id         Int     @id @default(autoincrement())
+    nama       String  @db.VarChar(100)
+    keterangan String? @db.VarChar(255)
+
+    created_at DateTime  @default(now())
+    updated_at DateTime  @updatedAt
+    deleted_at DateTime?
+
+    list_mapping_user UserJabatan[]
+
+    @@map("jabatan")
+}
+
+model UserJabatan {
+    id         Int    @id @default(autoincrement())
+    user_id    String @db.VarChar(18)
+    jabatan_id Int
+
+    user    User    @relation(fields: [user_id], references: [id])
+    jabatan Jabatan @relation(fields: [jabatan_id], references: [id])
+
+    created_at DateTime  @default(now())
+    updated_at DateTime  @updatedAt
+    deleted_at DateTime?
+
+    @@unique([user_id, jabatan_id])
+    @@map("map_user_jabatan")
+}

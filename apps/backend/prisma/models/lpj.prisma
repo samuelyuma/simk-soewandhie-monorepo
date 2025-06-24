@@ -1,0 +1,12 @@
+model Lpj {
+    id             Int  @id @default(autoincrement())
+    rincian_npd_id Int?
+
+    is_panjar Boolean
+
+    created_at DateTime  @default(now())
+    updated_at DateTime  @default(now()) @updatedAt
+    deleted_at DateTime?
+
+    rincian_npd NpdRincian? @relation(fields: [rincian_npd_id], references: [id])
+}
