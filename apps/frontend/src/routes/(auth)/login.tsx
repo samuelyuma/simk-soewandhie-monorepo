@@ -1,10 +1,12 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { FormProvider, useForm } from "react-hook-form";
 
-import { useLoginMutation } from "@/api/mutation/login";
 import InputForm from "@/components/form/InputForm";
 import { Button } from "@/components/ui/button";
+
 import type { AuthRequest } from "@/types/user";
+
+import { useLoginMutation } from "@/api/mutation/login";
 
 export const Route = createFileRoute("/(auth)/login")({
   beforeLoad: ({ context }) => {
@@ -31,13 +33,12 @@ function RouteComponent() {
       password: "",
     },
   });
-  const { handleSubmit, reset } = methods;
+  const { handleSubmit } = methods;
 
-  const { mutateAsync, isPending } = useLoginMutation();
+  const { mutate, isPending } = useLoginMutation();
 
   function onSubmit(data: AuthRequest) {
-    mutateAsync(data);
-    reset();
+    mutate(data);
   }
 
   return (
@@ -53,11 +54,15 @@ function RouteComponent() {
         className="flex w-full flex-col items-center justify-center lg:flex-[0.3]"
         style={{ backgroundImage: "url(/imgs/pattern-login.png)" }}
       >
-        <img src="/imgs/logo-pemkot-sby.png" alt="logo-pemkot-surabaya" />
+        <img
+          src="/imgs/logo-pemkot-sby.png"
+          alt="logo-pemkot-surabaya"
+          className="max-h-32"
+        />
         <p className="my-5 text-center font-bold text-3xl text-blue-600">
-          E-Payment
+          SIM BLUD
           <br />
-          Surabaya
+          RSUD dr. Mohamad Soewandhie
         </p>
         <FormProvider {...methods}>
           <form

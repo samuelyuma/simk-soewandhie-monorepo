@@ -4,8 +4,9 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import { Table } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+
+import { Table } from "@/components/ui/table";
 
 import DataTableBody from "./data-table-body";
 import DataTableHeader from "./data-table-header";

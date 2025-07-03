@@ -3,9 +3,9 @@ import axios, { type AxiosError } from "axios";
 import type { UninterceptedApiError } from "../types/api";
 
 export const baseURL =
-  process.env.REACT_APP_RUN_MODE === "development"
-    ? process.env.REACT_APP_API_URL_DEV
-    : process.env.REACT_APP_API_URL_PROD;
+  process.env.NODE_ENV === "development"
+    ? process.env.API_URL_DEV
+    : process.env.API_URL_PROD;
 
 const api = axios.create({
   baseURL: `${baseURL}/api`,

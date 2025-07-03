@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/useToast";
 import api from "@/lib/axios";
 import { setToken } from "@/lib/cookies";
 import { router } from "@/lib/router";
+
 import type { ApiError, ApiResponse } from "@/types/api";
 import type { AuthRequest, AuthResponse } from "@/types/user";
 
@@ -24,9 +25,17 @@ export function useLoginMutation() {
     onSuccess: async (response) => {
       const user = response.data.data;
       setToken(user.token);
-      queryClient.invalidateQueries(authQueryOptions());
-      router.invalidate();
+
+      await queryClient.invalidateQueries(authQueryOptions());
+      await router.invalidate();
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
       toast({ variant: "success", title: response.data.message });
+
+      await router.navigate({
+        to: user.token === "SUPERADMIN" ? "/superadmin" : "/pptk",
+      });
     },
     onError: (error) => {
       toast({

@@ -2,14 +2,17 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
 
-import { eventListOptions, rekeningListOptions } from "@/api/queries/anggaran";
+import { useDataTableServer } from "@/hooks/useDataTableServer";
+import { formatPrice } from "@/lib/utils";
+
 import DataTableServer from "@/components/data-table/data-table-server";
 import PageHeader from "@/components/layout/PageHeader";
+
+import type { Rekening } from "@/types/anggaran";
+
+import { eventListOptions, rekeningListOptions } from "@/api/queries/anggaran";
 import { PPTKBreadcrumb } from "@/constant/breadcrumb";
 import { AnggaranDialog } from "@/constant/dialog";
-import { useDataTableServer } from "@/hooks/useDataTableServer";
-import { usePriceFormat } from "@/hooks/usePriceFormat";
-import type { Rekening } from "@/types/anggaran";
 
 export const Route = createFileRoute(
   "/_authenticated/_pptkLayout/pptk/plafon/anggaran/$anggaranId/sub-kegiatan/$subKegiatanId/",
@@ -73,7 +76,7 @@ function RouteComponent() {
       header: "Realisasi Belanja",
       cell: ({ row }) =>
         row.original.total_belanja_rekening !== 0
-          ? usePriceFormat(row.original.total_belanja_rekening)
+          ? formatPrice(row.original.total_belanja_rekening)
           : "-",
     },
     {
@@ -81,7 +84,7 @@ function RouteComponent() {
       header: "Nominal Rekening",
       cell: ({ row }) =>
         row.original.total_nominal_rekening !== 0
-          ? usePriceFormat(row.original.total_nominal_rekening)
+          ? formatPrice(row.original.total_nominal_rekening)
           : "-",
     },
   ];
@@ -118,7 +121,7 @@ function RouteComponent() {
             <p className="text-sm">Jumlah Belanja</p>
             <p className="font-semibold">
               {data?.data.total_belanja_sub_kegiatan
-                ? usePriceFormat(data?.data.total_belanja_sub_kegiatan)
+                ? formatPrice(data?.data.total_belanja_sub_kegiatan)
                 : "-"}{" "}
               {data?.data.total_belanja_sub_kegiatan !== 0 ? (
                 <span className="text-green-800">
@@ -131,7 +134,7 @@ function RouteComponent() {
             <p className="text-sm">Nominal Anggaran</p>
             <p className="font-semibold">
               {data?.data.total_nominal_sub_kegiatan
-                ? usePriceFormat(data?.data.total_nominal_sub_kegiatan)
+                ? formatPrice(data?.data.total_nominal_sub_kegiatan)
                 : "-"}
             </p>
           </div>

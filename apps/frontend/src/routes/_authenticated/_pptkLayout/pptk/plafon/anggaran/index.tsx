@@ -2,14 +2,16 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
 
-import { kegiatanListOptions } from "@/api/queries/anggaran";
+import { useDataTableServer } from "@/hooks/useDataTableServer";
+import { formatPrice } from "@/lib/utils";
+
 import DataTableServer from "@/components/data-table/data-table-server";
 import PageHeader from "@/components/layout/PageHeader";
-import { PPTKBreadcrumb } from "@/constant/breadcrumb";
-import { AnggaranDialog } from "@/constant/dialog";
-import { useDataTableServer } from "@/hooks/useDataTableServer";
-import { usePriceFormat } from "@/hooks/usePriceFormat";
+
 import type { Kegiatan } from "@/types/anggaran";
+
+import { kegiatanListOptions } from "@/api/queries/anggaran";
+import { PPTKBreadcrumb } from "@/constant/breadcrumb";
 
 export const Route = createFileRoute(
   "/_authenticated/_pptkLayout/pptk/plafon/anggaran/",
@@ -58,7 +60,7 @@ function RouteComponent() {
       header: "Realisasi Belanja",
       cell: ({ row }) =>
         row.original.total_belanja_kegiatan !== 0
-          ? usePriceFormat(row.original.total_belanja_kegiatan)
+          ? formatPrice(row.original.total_belanja_kegiatan)
           : "-",
     },
     {
@@ -66,7 +68,7 @@ function RouteComponent() {
       header: "Nominal Anggaran",
       cell: ({ row }) =>
         row.original.total_nominal_kegiatan !== 0
-          ? usePriceFormat(row.original.total_nominal_kegiatan)
+          ? formatPrice(row.original.total_nominal_kegiatan)
           : "-",
     },
   ];
@@ -85,16 +87,6 @@ function RouteComponent() {
         tableState={tableState}
         setTableState={setTableState}
         classNames={{ wrapper: "my-6" }}
-        createItem={{
-          dropdownLabel: "Tambah Kegiatan",
-          dialog: AnggaranDialog.kegiatan,
-        }}
-        topContentOptions={{
-          withRowCountSelector: true,
-          withSearchBar: true,
-          withExportDataSelector: true,
-          withAddButton: true,
-        }}
       />
     </div>
   );

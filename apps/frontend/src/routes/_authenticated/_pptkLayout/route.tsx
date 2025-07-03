@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 
 import Navigation from "@/components/layout/Navigation";
+
 import { PPTKNavigationItems } from "@/constant/navigation";
 
 export const Route = createFileRoute("/_authenticated/_pptkLayout")({

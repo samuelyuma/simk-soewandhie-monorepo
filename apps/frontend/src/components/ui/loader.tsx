@@ -1,4 +1,4 @@
-import { LoaderCircle, type LucideProps } from "lucide-react";
+import { LoaderCircle, LucideProps } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 

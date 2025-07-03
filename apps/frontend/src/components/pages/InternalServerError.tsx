@@ -5,7 +5,11 @@ import { Button } from "../ui/button";
 export default function InternalServerError() {
   return (
     <div className="flex h-screen flex-col items-center justify-center space-y-6">
-      <img src="/imgs/500-error.png" className="h-56" />
+      <img
+        alt="internal server error"
+        src="/imgs/500-error.png"
+        className="h-56"
+      />
 
       <p className="text-center font-bold text-4xl text-red-800">
         500 - Internal Server Error

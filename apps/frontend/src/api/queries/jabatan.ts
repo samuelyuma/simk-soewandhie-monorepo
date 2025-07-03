@@ -1,6 +1,7 @@
 import { queryOptions } from "@tanstack/react-query";
 
 import api from "@/lib/axios";
+
 import type { PaginationData } from "@/types/api";
 import type { Jabatan } from "@/types/user";
 

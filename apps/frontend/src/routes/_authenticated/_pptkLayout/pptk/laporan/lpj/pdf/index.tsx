@@ -7,73 +7,71 @@ import {
   View,
 } from "@react-pdf/renderer";
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouterState } from "@tanstack/react-router";
 import { format, formatDate } from "date-fns";
 import { id } from "date-fns/locale";
-import { useEffect, useState } from "react";
 import { createTw } from "react-pdf-tailwind";
 
-import { useCreateLpjMutation } from "@/api/mutation/lpj/create";
-import { userListOptions } from "@/api/queries/user";
+import { formatPrice, formatRomanMonth } from "@/lib/utils";
+
 import PageHeader from "@/components/layout/PageHeader";
 import PDFTable from "@/components/pdf-table/pdf-table";
-import { PPTKBreadcrumb } from "@/constant/breadcrumb";
-import { useMonthRoman } from "@/hooks/useMonthRoman";
-import { usePriceFormat } from "@/hooks/usePriceFormat";
+import { Button } from "@/components/ui/button";
+
 import type { ApiResponse } from "@/types/api";
-import type { LpjPdfRequest, LpjPdfResponse } from "@/types/lpj";
+import type { LpjPdfResponse } from "@/types/lpj";
 import type { User } from "@/types/user";
+
+import { userListOptions } from "@/api/queries/user";
+import { PPTKBreadcrumb } from "@/constant/breadcrumb";
 
 export const Route = createFileRoute(
   "/_authenticated/_pptkLayout/pptk/laporan/lpj/pdf/",
 )({
   component: RouteComponent,
-  validateSearch: (search: Record<string, unknown>): LpjPdfRequest => {
-    return {
-      periode: String(search.periode),
-      jenisLaporan: String(search.jenisLaporan),
-      npd: Number(search.npd),
-    };
-  },
 });
 
 function RouteComponent() {
-  const { periode, jenisLaporan, npd } = Route.useSearch();
+  const router = useRouterState();
+  const state: { lpjData?: ApiResponse<LpjPdfResponse> } =
+    router.location.state;
+  const lpjData = state?.lpjData;
 
-  const [lpjData, setLpjData] = useState<ApiResponse<LpjPdfResponse> | null>(
-    null,
-  );
-
-  const createLpjPdf = useCreateLpjMutation();
-
-  const bendaharaData = useQuery(
+  const { data: bendaharaData, isPending: isBendaharaLoading } = useQuery(
     userListOptions({ filter_by: "jabatan_id", filter_value: "7" }),
   );
 
-  useEffect(() => {
-    const fetchLpjData = async () => {
-      try {
-        const payload: any = {};
+  if (!lpjData) {
+    return (
+      <div className="pb-4">
+        <PageHeader
+          pageTitle="Unduh PDF LPJ"
+          breadcrumbItems={PPTKBreadcrumb.laporan["lpj-pdf"]}
+        />
+        <div className="grid min-h-svh w-full place-items-center text-center">
+          <div>
+            <p className="text-lg font-semibold">Data LPJ tidak tersedia.</p>
+            <p className="text-muted-foreground">
+              Silakan kembali ke halaman laporan untuk membuat LPJ terlebih
+              dahulu.
+            </p>
+            <Button asChild className="mt-4">
+              <Link to="/pptk/laporan/lpj">Kembali ke Laporan LPJ</Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-        if (npd !== 0) {
-          payload.rincian_npd_id = npd;
-        } else {
-          payload.is_panjar = jenisLaporan === "panjar";
-        }
-
-        if (periode) {
-          payload.bulan = periode;
-        }
-
-        const response = await createLpjPdf.mutateAsync(payload);
-        setLpjData(response.data as ApiResponse<LpjPdfResponse>);
-      } catch (error) {
-        console.error("Error fetching LPJ data:", error);
-      }
-    };
-
-    fetchLpjData();
-  }, [periode, jenisLaporan, npd, createLpjPdf.mutateAsync]);
+  if (isBendaharaLoading) {
+    // Menampilkan loading jika data bendahara belum siap
+    return (
+      <div className="grid min-h-svh w-full place-items-center">
+        <p>Loading Data...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="pb-4">
@@ -83,14 +81,13 @@ function RouteComponent() {
       />
 
       <div className="grid min-h-svh w-full place-items-center">
-        {lpjData && (
-          <PDFViewer className="min-h-svh w-full">
-            <PDFDocument
-              data={lpjData.data}
-              bendaharaData={bendaharaData.data?.data || []}
-            />
-          </PDFViewer>
-        )}
+        {/* Tidak perlu lagi state isPending, langsung render PDFViewer */}
+        <PDFViewer className="min-h-svh w-full">
+          <PDFDocument
+            data={lpjData.data}
+            bendaharaData={bendaharaData?.data || []}
+          />
+        </PDFViewer>
       </div>
     </div>
   );
@@ -117,13 +114,14 @@ const PDFDocument = ({
     uang_persediaan_awal - uang_persediaan_penggunaan;
 
   return (
-    <Document>
+    <Document
+      title={`LPJ No. ${data?.id} - ${format(new Date(), "dd MMMM yyyy", {
+        locale: id,
+      })}`}
+    >
       <Page size="A4" style={tw("px-8 pt-9 pb-12")}>
         <View style={tw("flex flex-row")}>
-          <Image
-            style={tw("mb-5 w-20 flex-shrink-0")}
-            src="/imgs/logo-pemkot-sby.png"
-          />
+          <Image style={tw("mb-5 w-36")} src="/imgs/logo-pemkot-sby.png" />
           <View style={tw("flex w-full flex-col items-center")}>
             <Text style={tw("text-center font-bold text-base tracking-wide")}>
               PEMERINTAH KOTA SURABAYA
@@ -141,7 +139,7 @@ const PDFDocument = ({
               LAPORAN PERTANGGUNGJAWABAN UANG PERSEDIAAN
             </Text>
             <Text style={tw("text-center font-bold text-sm tracking-wide")}>
-              No: {data.id}/1 02 0200/LPJ-UP/{useMonthRoman(data.created_at)}
+              No: {data.id}/1 02 0200/LPJ-UP/{formatRomanMonth(data.created_at)}
               /2025
             </Text>
             <Text style={tw("text-center font-bold text-sm tracking-wide")}>
@@ -163,13 +161,13 @@ const PDFDocument = ({
           </View>
           <View>
             <Text style={tw("font-medium text-base tracking-wide")}>
-              : {usePriceFormat(uang_persediaan_awal)}
+              : {formatPrice(uang_persediaan_awal)}
             </Text>
             <Text style={tw("font-medium text-base tracking-wide")}>
-              : {usePriceFormat(uang_persediaan_penggunaan)}
+              : {formatPrice(uang_persediaan_penggunaan)}
             </Text>
             <Text style={tw("font-medium text-base tracking-wide")}>
-              : {usePriceFormat(uang_persediaan_akhir)}
+              : {formatPrice(uang_persediaan_akhir)}
             </Text>
           </View>
         </View>
@@ -210,88 +208,96 @@ const PDFDocument = ({
           </View>
         </View>
 
-        <PDFTable
-          header={[
-            {
-              title: "Kode Rekening",
-              key: "kodeRekening",
-            },
-            {
-              title: "Uraian",
-              key: "uraian",
-            },
-            {
-              title: "Jumlah Anggaran",
-              format: "currency",
-              key: "jumlahAnggaran",
-            },
-            {
-              title: "Belanja Periode Ini",
-              format: "currency",
-              key: "belanjaPeriodeIni",
-            },
-            {
-              title: "Akumulasi Belanja",
-              format: "currency",
-              key: "akumulasiBelanja",
-            },
-            {
-              title: "Sisa Anggaran",
-              format: "currency",
-              key: "sisaAnggaran",
-            },
-          ]}
-          data={data.list_rekening.map((rekening) => ({
-            kodeRekening: rekening.kode,
-            uraian: rekening.nama,
-            jumlahAnggaran: rekening.total_anggaran,
-            belanjaPeriodeIni: rekening.total_belanja,
-            akumulasiBelanja: rekening.total_akumulasi_belanja,
-            sisaAnggaran: rekening.total_anggaran - rekening.total_belanja,
-          }))}
-          footer={[
-            {
-              title: "Jumlah",
-              colSpan: 2,
-            },
-            {
-              title: String(
-                data.list_rekening.reduce(
-                  (total, rekening) => total + rekening.total_anggaran,
-                  0,
+        <View style={tw("mt-8")}>
+          <PDFTable
+            header={[
+              {
+                title: "Kode Rekening",
+                key: "kodeRekening",
+              },
+              {
+                title: "Uraian",
+                key: "uraian",
+              },
+              {
+                title: "Jumlah Anggaran",
+                format: "currency",
+                key: "jumlahAnggaran",
+              },
+              {
+                title: "Belanja Periode Ini",
+                format: "currency",
+                key: "belanjaPeriodeIni",
+              },
+              {
+                title: "Akumulasi Belanja",
+                format: "currency",
+                key: "akumulasiBelanja",
+              },
+              {
+                title: "Sisa Anggaran",
+                format: "currency",
+                key: "sisaAnggaran",
+              },
+            ]}
+            data={data.list_rekening.map((rekening) => ({
+              kodeRekening: rekening.kode,
+              uraian: rekening.nama,
+              jumlahAnggaran: rekening.total_anggaran,
+              belanjaPeriodeIni: rekening.total_belanja,
+              akumulasiBelanja: rekening.total_akumulasi_belanja,
+              sisaAnggaran: rekening.total_anggaran - rekening.total_belanja,
+            }))}
+            footer={[
+              {
+                title: "Jumlah",
+                colSpan: 2,
+              },
+              {
+                title: String(
+                  data.list_rekening.reduce(
+                    (total, rekening) => total + rekening.total_anggaran,
+                    0,
+                  ),
                 ),
-              ),
-              format: "currency",
-            },
-            {
-              title: String(
-                data.list_rekening.reduce(
-                  (total, rekening) => total + rekening.total_belanja,
-                  0,
+                format: "currency",
+                width: "w-[16.7%]",
+              },
+              {
+                title: String(
+                  data.list_rekening.reduce(
+                    (total, rekening) => total + rekening.total_belanja,
+                    0,
+                  ),
                 ),
-              ),
-              format: "currency",
-            },
-            {
-              title: String(
-                data.list_rekening.reduce(
-                  (total, rekening) => total + rekening.total_akumulasi_belanja,
-                  0,
+                format: "currency",
+                width: "w-[16.7%]",
+              },
+              {
+                title: String(
+                  data.list_rekening.reduce(
+                    (total, rekening) =>
+                      total + rekening.total_akumulasi_belanja,
+                    0,
+                  ),
                 ),
-              ),
-              format: "currency",
-            },
-            {
-              title: String(
-                data.list_rekening.reduce(
-                  (total, rekening) => total + rekening.total_akumulasi_belanja,
-                  0,
+                format: "currency",
+                width: "w-[16.7%]",
+              },
+              {
+                title: String(
+                  data.list_rekening.reduce(
+                    (total, rekening) =>
+                      total + rekening.total_akumulasi_belanja,
+                    0,
+                  ),
                 ),
-              ),
-              format: "currency",
-            },
-          ]}
-        />
+                format: "currency",
+                width: "w-[16.5%]",
+              },
+            ]}
+          />
+        </View>
 
         <View style={tw("mt-8 flex flex-col items-end font-medium text-base")}>
           <View style={tw("flex flex-col items-center")}>

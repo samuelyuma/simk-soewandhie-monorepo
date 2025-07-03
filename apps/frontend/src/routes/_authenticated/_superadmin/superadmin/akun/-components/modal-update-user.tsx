@@ -5,8 +5,8 @@ import { useEffect, useMemo } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import * as v from "valibot";
 
-import { useUpdateUserMutation } from "@/api/mutation/user/update";
-import { jabatanListOptionsInfinite } from "@/api/queries/jabatan";
+import { useDialogAndModal } from "@/hooks/useDialogAndModal";
+
 import InputForm from "@/components/form/InputForm";
 import TitleSeparator from "@/components/layout/TitleSeparator";
 import { Button } from "@/components/ui/button";
@@ -18,8 +18,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
-import { useDialogAndModal } from "@/hooks/useDialogAndModal";
+
 import type { Jabatan, UpdateUser, User } from "@/types/user";
+
+import { useUpdateUserMutation } from "@/api/mutation/user/update";
+import { jabatanListOptionsInfinite } from "@/api/queries/jabatan";
 
 interface FormData
   extends Omit<

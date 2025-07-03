@@ -23,13 +23,19 @@ type PDFTableProps<T> = {
   data: Record<string, T>[];
   header: TableColumn[];
   footer?: TableColumn[];
+  isNestedHeader?: boolean;
 };
 
 const tw = createTw({});
 
-const PDFTable = <T,>({ data, header, footer }: PDFTableProps<T>) => (
+const PDFTable = <T,>({
+  data,
+  header,
+  footer,
+  isNestedHeader,
+}: PDFTableProps<T>) => (
   <View style={tw("border border-black")}>
-    <PDFTableHeader header={header} />
+    <PDFTableHeader header={header} isNestedHeader={isNestedHeader} />
     <PDFTableBody data={data} header={header} />
     <PDFTableFooter footer={footer || []} />
   </View>

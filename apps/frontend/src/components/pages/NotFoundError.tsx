@@ -5,7 +5,7 @@ import { Button } from "../ui/button";
 export default function NotFoundError() {
   return (
     <div className="flex h-screen flex-col items-center justify-center space-y-6">
-      <img src="/imgs/404-error.png" className="h-56" />
+      <img alt="not found error" src="/imgs/404-error.png" className="h-56" />
 
       <p className="text-center font-bold text-4xl text-red-800">
         404 - Page Not Found

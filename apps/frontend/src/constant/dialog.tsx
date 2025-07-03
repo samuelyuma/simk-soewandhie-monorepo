@@ -19,7 +19,7 @@ export const AnggaranDialog = {
     {
       title: "Rekening",
       name: "modal-add-rekening",
-      component: <ModalAddAnggaran type="rekening" />,
+      component: <ModalAddAnggaran type="rekening" params_id="1" />,
     },
     {
       title: "Event",
@@ -27,11 +27,11 @@ export const AnggaranDialog = {
       component: <ModalAddAnggaran type="events" />,
     },
   ],
-  "rincian-objek": [
+  "rincian-objek": (paramsId: string) => [
     {
       title: "Rincian Objek",
       name: "modal-add-rincian-objek",
-      component: <ModalAddAnggaran type="rincian-objek" />,
+      component: <ModalAddAnggaran type="rincian-objek" params_id={paramsId} />,
     },
   ],
 };

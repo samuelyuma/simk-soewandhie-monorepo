@@ -3,19 +3,21 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Download, Pencil, Trash2 } from "lucide-react";
 
-import { useDeletePencairanMutation } from "@/api/mutation/pencairan/delete";
-import { useDeleteNpdMutation } from "@/api/mutation/rincian-npd/delete";
-import { rincianNpdDetailOptions } from "@/api/queries/npd";
+import { useDataTableServer } from "@/hooks/useDataTableServer";
+import { useDialogAndModal } from "@/hooks/useDialogAndModal";
+import { formatPrice, formatRomanMonth } from "@/lib/utils";
+
 import DataTableServer from "@/components/data-table/data-table-server";
 import PageHeader from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/button";
-import { PPTKBreadcrumb } from "@/constant/breadcrumb";
-import { useDataTableServer } from "@/hooks/useDataTableServer";
-import { useDialogAndModal } from "@/hooks/useDialogAndModal";
-import { useMonthRoman } from "@/hooks/useMonthRoman";
-import { usePriceFormat } from "@/hooks/usePriceFormat";
-import DeleteAlert from "@/routes/_authenticated/-components/DeleteAlert";
+
 import type { ItemRincianNpd } from "@/types/npd";
+
+import { useDeletePencairanMutation } from "@/api/mutation/pencairan/delete";
+import { useDeleteNpdMutation } from "@/api/mutation/rincian-npd/delete";
+import { rincianNpdDetailOptions } from "@/api/queries/npd";
+import { PPTKBreadcrumb } from "@/constant/breadcrumb";
+import DeleteAlert from "@/routes/_authenticated/-components/DeleteAlert";
 
 import ModalUpdateNpd from "../-components/modal-update-npd";
 
@@ -56,7 +58,7 @@ function RouteComponent() {
     window.location.href = "/pptk/npd";
   };
 
-  const pageTitle = `Rincian NPD No. ${data?.data.no}/BLUD/NPD/UP/${data?.data.created_at ? useMonthRoman(data.data.created_at) : ""}/${data?.data.npd.tahun}`;
+  const pageTitle = `Rincian NPD No. ${data?.data.no}/BLUD/NPD/UP/${data?.data.created_at ? formatRomanMonth(data.data.created_at) : ""}/${data?.data.npd.tahun}`;
 
   const Columns: ColumnDef<ItemRincianNpd>[] = [
     {
@@ -79,7 +81,7 @@ function RouteComponent() {
       },
       cell: ({ row }) => (
         <div className="text-center">
-          {usePriceFormat(row.original.rincian_objek.nominal_anggaran)}
+          {formatPrice(row.original.rincian_objek.nominal_anggaran)}
         </div>
       ),
     },
@@ -98,7 +100,7 @@ function RouteComponent() {
           cell: ({ row }) => (
             <div className="text-center">
               {row.original.nominal_pencairan_sebelumnya
-                ? usePriceFormat(row.original.nominal_pencairan_sebelumnya)
+                ? formatPrice(row.original.nominal_pencairan_sebelumnya)
                 : "-"}
             </div>
           ),
@@ -111,7 +113,7 @@ function RouteComponent() {
           },
           cell: ({ row }) => (
             <div className="text-center">
-              {usePriceFormat(row.original.pencairan_saat_ini.nominal)}
+              {formatPrice(row.original.pencairan_saat_ini.nominal)}
             </div>
           ),
         },
@@ -234,7 +236,7 @@ function RouteComponent() {
                       <Link to="/pptk/npd/$npdId/pdf" params={{ npdId }}>
                         <Button variant={"green"} className="self-end">
                           <Download size={16} />
-                          <p>Unduh</p>
+                          <p>Print</p>
                         </Button>
                       </Link>
                     </div>

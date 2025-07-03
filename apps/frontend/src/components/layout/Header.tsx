@@ -24,8 +24,8 @@ const Header = () => {
           className="h-12 w-auto"
         />
         <div>
-          <p className="font-bold text-xl">E-Payment</p>
-          <p className="text-lg">Surabaya</p>
+          <p className="font-bold text-xl">SIM BLUD</p>
+          <p className="text-lg">RSUD dr. Mohamad Soewandhie</p>
         </div>
       </div>
 

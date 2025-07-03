@@ -1,12 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { FormProvider, useForm } from "react-hook-form";
 
-import { useCreateEventsMutation } from "@/api/mutation/events/create";
-import { useCreateKegiatanMutation } from "@/api/mutation/kegiatan/create";
-import { useCreateRekeningMutation } from "@/api/mutation/rekening/create";
-import { useCreateRincianObjekMutation } from "@/api/mutation/rincian-objek/create";
-import { useCreateSubKegiatanMutation } from "@/api/mutation/sub-kegiatan/create";
-import { eventListOptions } from "@/api/queries/anggaran";
+import { useDialogAndModal } from "@/hooks/useDialogAndModal";
+
 import CheckboxForm from "@/components/form/CheckboxForm";
 import InputForm from "@/components/form/InputForm";
 import SelectForm from "@/components/form/SelectForm";
@@ -17,7 +13,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useDialogAndModal } from "@/hooks/useDialogAndModal";
+
+import { useCreateEventsMutation } from "@/api/mutation/events/create";
+import { useCreateKegiatanMutation } from "@/api/mutation/kegiatan/create";
+import { useCreateRekeningMutation } from "@/api/mutation/rekening/create";
+import { useCreateRincianObjekMutation } from "@/api/mutation/rincian-objek/create";
+import { useCreateSubKegiatanMutation } from "@/api/mutation/sub-kegiatan/create";
+import { eventListOptions } from "@/api/queries/anggaran";
 
 type AnggaranType =
   | "kegiatan"
@@ -88,9 +90,17 @@ export default function ModalAddAnggaran({
     const payloadMap = {
       kegiatan: data,
       "sub-kegiatan": { ...data, kegiatan_id: parsedParamsId },
-      rekening: { ...data, sub_kegiatan_id: parsedParamsId },
-      events: data,
-      "rincian-objek": { ...data, rekening_id: parsedParamsId },
+      rekening: {
+        ...data,
+        sub_kegiatan_id: parsedParamsId,
+        event_id: data.event_id ? parseInt(data.event_id) : undefined,
+      },
+      events: { ...data, tgl: new Date() },
+      "rincian-objek": {
+        ...data,
+        nominal_anggaran: parseInt(data.nominal_anggaran),
+        rekening_id: parsedParamsId,
+      },
     };
 
     mutate(payloadMap[type], { onSuccess });
@@ -127,8 +137,8 @@ export default function ModalAddAnggaran({
             {type === "rincian-objek" && (
               <>
                 <InputForm
-                  name="nominal"
-                  label="Nominal"
+                  name="nominal_anggaran"
+                  label="Nominal Anggaran"
                   placeholder="Masukkan nominal"
                   type="number"
                 />

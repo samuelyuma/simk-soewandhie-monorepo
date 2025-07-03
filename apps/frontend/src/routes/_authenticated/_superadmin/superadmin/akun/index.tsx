@@ -4,15 +4,18 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { Edit } from "lucide-react";
 import { useState } from "react";
 
-import { userListOptions } from "@/api/queries/user";
+import { useDataTableServer } from "@/hooks/useDataTableServer";
+import { useDialogAndModal } from "@/hooks/useDialogAndModal";
+
 import DataTableServer from "@/components/data-table/data-table-server";
 import PageHeader from "@/components/layout/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { SuperadminBreadcrumb } from "@/constant/breadcrumb";
-import { useDataTableServer } from "@/hooks/useDataTableServer";
-import { useDialogAndModal } from "@/hooks/useDialogAndModal";
+
 import type { User } from "@/types/user";
+
+import { userListOptions } from "@/api/queries/user";
+import { SuperadminBreadcrumb } from "@/constant/breadcrumb";
 
 import ModalAddUser from "./-components/modal-add-user";
 import ModalUpdateUser from "./-components/modal-update-user";
@@ -51,7 +54,9 @@ function RouteComponent() {
       header: "Jabatan",
       cell: ({ row }) =>
         row.original.list_jabatan.map((jabatan) => (
-          <Badge className="m-1">{jabatan.jabatan.nama}</Badge>
+          <Badge key={jabatan.id} className="m-1">
+            {jabatan.jabatan.nama}
+          </Badge>
         )) || "-",
     },
     {

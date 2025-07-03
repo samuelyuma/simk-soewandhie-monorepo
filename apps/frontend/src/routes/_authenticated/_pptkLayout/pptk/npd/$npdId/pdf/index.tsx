@@ -12,12 +12,15 @@ import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import { createTw } from "react-pdf-tailwind";
 
-import { rincianNpdDetailOptions } from "@/api/queries/npd";
+import { formatRomanMonth } from "@/lib/utils";
+
 import PageHeader from "@/components/layout/PageHeader";
 import PDFTable from "@/components/pdf-table/pdf-table";
-import { PPTKBreadcrumb } from "@/constant/breadcrumb";
-import { useMonthRoman } from "@/hooks/useMonthRoman";
+
 import type { ItemRincianNpd } from "@/types/npd";
+
+import { rincianNpdDetailOptions } from "@/api/queries/npd";
+import { PPTKBreadcrumb } from "@/constant/breadcrumb";
 
 export const Route = createFileRoute(
   "/_authenticated/_pptkLayout/pptk/npd/$npdId/pdf/",
@@ -105,7 +108,7 @@ const PDFDocument = ({ data }: { data: any }) => {
             </Text>
             <Text style={tw("font-medium text-base")}>
               No : {data?.data.no}/BLUD/NPD/UP/
-              {useMonthRoman(data?.data.created_at)}/{data?.data.npd.tahun}
+              {formatRomanMonth(data?.data.created_at)}/{data?.data.npd.tahun}
             </Text>
             <Text style={tw("font-medium text-base")}>
               Tanggal :{" "}
@@ -153,6 +156,7 @@ const PDFDocument = ({ data }: { data: any }) => {
 
         <View style={tw("mt-8")}>
           <PDFTable
+            isNestedHeader={true}
             data={
               data?.data.list_item_rincian_npd?.map(
                 (item: ItemRincianNpd, index: number) => ({

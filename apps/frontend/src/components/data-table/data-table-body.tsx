@@ -1,7 +1,8 @@
 import { flexRender, type Row, type Table } from "@tanstack/react-table";
 
-import { TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+
+import { TableBody, TableCell, TableRow } from "@/components/ui/table";
 
 import type { DataTableSubClassNames } from "./data-table-static";
 

@@ -2,9 +2,10 @@ import { router } from "@lib/router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 
-import { authQueryOptions, useAuthQuery } from "@/api/queries/user";
-import { removeToken } from "@/lib/cookies";
 import type { User } from "@/types/user";
+
+import { useLogoutMutation } from "@/api/mutation/logout";
+import { authQueryOptions, useAuthQuery } from "@/api/queries/user";
 
 type AuthState =
   | { user: null; status: "PENDING" }
@@ -12,7 +13,6 @@ type AuthState =
   | { user: User; status: "AUTHENTICATED" };
 
 type AuthUtils = {
-  signIn: () => void;
   signOut: () => void;
   ensureData: () => Promise<User | null>;
 };
@@ -22,6 +22,7 @@ type AuthData = AuthState & AuthUtils;
 function useAuth(): AuthData {
   const currentUser = useAuthQuery();
   const queryClient = useQueryClient();
+  const logoutMutation = useLogoutMutation();
 
   useEffect(() => {
     router.invalidate();
@@ -29,20 +30,15 @@ function useAuth(): AuthData {
 
   useEffect(() => {
     if (currentUser.isError) {
-      removeToken();
       queryClient.setQueryData(["auth"], null);
     }
   }, [queryClient, currentUser.isError]);
 
   const utils: AuthUtils = {
-    signIn: () => {
-      router.navigate({ to: "/login" });
-    },
-    signOut: () => {
-      removeToken();
-      queryClient.setQueryData(["auth"], null);
-      router.navigate({ to: "/login" });
-      router.invalidate();
+    signOut: async () => {
+      await logoutMutation.mutateAsync();
+      await router.invalidate();
+      await router.navigate({ to: "/login" });
     },
     ensureData: async () => {
       try {

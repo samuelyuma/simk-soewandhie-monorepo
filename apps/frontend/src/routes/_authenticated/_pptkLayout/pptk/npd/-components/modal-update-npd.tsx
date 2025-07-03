@@ -3,9 +3,9 @@ import { Trash2 } from "lucide-react";
 import { useEffect } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 
-import { useUpdateRincianNpdMutation } from "@/api/mutation/rincian-npd/update";
-import { rincianObjekListOptionsInfinite } from "@/api/queries/anggaran";
-import { userListOptions } from "@/api/queries/user";
+import { useDialogAndModal } from "@/hooks/useDialogAndModal";
+import { formatPrice } from "@/lib/utils";
+
 import CheckboxForm from "@/components/form/CheckboxForm";
 import DatePickerForm from "@/components/form/DatePickerForm";
 import InputForm from "@/components/form/InputForm";
@@ -27,10 +27,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useDialogAndModal } from "@/hooks/useDialogAndModal";
-import { usePriceFormat } from "@/hooks/usePriceFormat";
+
 import type { RincianObjek } from "@/types/anggaran";
 import type { RincianNpdById, UpdateRincianNpd } from "@/types/npd";
+
+import { useUpdateRincianNpdMutation } from "@/api/mutation/rincian-npd/update";
+import { rincianObjekListOptionsInfinite } from "@/api/queries/anggaran";
+import { userListOptions } from "@/api/queries/user";
 
 interface FormData {
   keperluan: string;
@@ -297,11 +300,11 @@ export default function ModalUpdateNpd({ dataNpd }: ModalUpdateNpdProps) {
                             {item.nama}
                           </TableCell>
                           <TableCell className="w-32">
-                            {usePriceFormat(item.nominal_anggaran)}
+                            {formatPrice(item.nominal_anggaran)}
                           </TableCell>
                           <TableCell className="w-32">
                             {item.pencairan_sebelumnya
-                              ? usePriceFormat(item.pencairan_sebelumnya)
+                              ? formatPrice(item.pencairan_sebelumnya)
                               : "-"}
                           </TableCell>
                           <TableCell className="w-40">

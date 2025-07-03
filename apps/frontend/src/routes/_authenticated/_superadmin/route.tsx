@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
 import Navigation from "@/components/layout/Navigation";
+
 import { SuperAdminNavigationItems } from "@/constant/navigation";
 
 export const Route = createFileRoute("/_authenticated/_superadmin")({

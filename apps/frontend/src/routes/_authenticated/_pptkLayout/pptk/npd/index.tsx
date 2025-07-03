@@ -2,13 +2,16 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
 
-import { rincianNpdListOptions } from "@/api/queries/npd";
+import { useDataTableServer } from "@/hooks/useDataTableServer";
+import { formatRomanMonth } from "@/lib/utils";
+
 import DataTableServer from "@/components/data-table/data-table-server";
 import PageHeader from "@/components/layout/PageHeader";
-import { PPTKBreadcrumb } from "@/constant/breadcrumb";
-import { useDataTableServer } from "@/hooks/useDataTableServer";
-import { useMonthRoman } from "@/hooks/useMonthRoman";
+
 import type { RincianNpd } from "@/types/npd";
+
+import { rincianNpdListOptions } from "@/api/queries/npd";
+import { PPTKBreadcrumb } from "@/constant/breadcrumb";
 
 import ModalAddNpd from "./-components/modal-add-npd";
 
@@ -38,7 +41,7 @@ function RouteComponent() {
       accessorKey: "no",
       header: "No. NPD",
       cell: ({ row }) =>
-        `${row.original.no}/BLUD/NPD/UP/${useMonthRoman(row.original.created_at || "")}/2025`,
+        `${row.original.no}/BLUD/NPD/UP/${formatRomanMonth(row.original.created_at || "")}/2025`,
     },
     {
       accessorKey: "is_panjar",
@@ -71,10 +74,6 @@ function RouteComponent() {
     {
       accessorKey: "total_pencairan",
       header: "Saat Ini",
-    },
-    {
-      accessorKey: "status",
-      header: "Status",
     },
   ];
 

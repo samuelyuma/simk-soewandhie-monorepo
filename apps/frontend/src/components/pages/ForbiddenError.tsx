@@ -5,7 +5,7 @@ import { Button } from "../ui/button";
 export default function ForbiddenError() {
   return (
     <div className="flex h-screen flex-col items-center justify-center space-y-6">
-      <img src="/imgs/403-error.png" className="h-56" />
+      <img alt="forbidden error" src="/imgs/403-error.png" className="h-56" />
 
       <p className="text-center font-bold text-4xl text-red-800">
         403 - Forbidden

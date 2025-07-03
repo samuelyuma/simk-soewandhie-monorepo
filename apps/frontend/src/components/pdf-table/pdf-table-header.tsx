@@ -5,7 +5,13 @@ import type { TableColumn } from "./pdf-table";
 
 const tw = createTw({});
 
-const PDFTableHeader = ({ header }: { header: TableColumn[] }) => {
+const PDFTableHeader = ({
+  header,
+  isNestedHeader = false,
+}: {
+  header: TableColumn[];
+  isNestedHeader?: boolean;
+}) => {
   return (
     <View>
       <View style={tw("flex flex-row")}>
@@ -36,7 +42,7 @@ const PDFTableHeader = ({ header }: { header: TableColumn[] }) => {
                     <View
                       key={subIndex}
                       style={tw(
-                        `${subItem.width || "flex-1"}  ${subIndex < item.items?.length - 1 ? "border-black border-r" : ""} p-1 flex justify-center items-center`,
+                        `${subItem.width || "flex-1"}  ${item.items?.length && subIndex < item.items?.length - 1 ? "border-black border-r" : ""} p-1 flex justify-center items-center`,
                       )}
                     >
                       <Text style={tw("text-center text-xs leading-tight")}>
@@ -47,7 +53,11 @@ const PDFTableHeader = ({ header }: { header: TableColumn[] }) => {
                 </View>
               </View>
             ) : (
-              <View style={tw(`p-1 flex justify-center items-center flex-1`)}>
+              <View
+                style={tw(
+                  `p-1 flex justify-center items-center ${isNestedHeader ? "flex-1" : ""}`,
+                )}
+              >
                 <Text style={tw("text-center font-bold text-xs leading-tight")}>
                   {item.title}
                 </Text>
