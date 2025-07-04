@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.0.5/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.0.6/schema.json",
   "vcs": {
     "enabled": false,
     "clientKind": "git",
@@ -14,6 +14,7 @@
       "apps/frontend/package.json",
       "apps/backend/package.json",
       "!apps/frontend/src/routeTree.gen.ts",
+      "!apps/frontend/src/components/ui/**",
       "!apps/backend/src/generated/prisma/**"
     ]
   },

@@ -15,7 +15,7 @@ const app = new Elysia()
       credentials: true,
       maxAge: 86400,
       allowedHeaders: ["Content-Type", "Authorization"],
-      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     }),
   )
   .use(
@@ -28,8 +28,7 @@ const app = new Elysia()
         },
         { default: "development" },
       ),
-      BE_PORT: t.String({ minLength: 1, error: "BE_PORT (PORT) is required" }),
-      CLIENT_ORIGIN: t.String({ default: "*" }),
+      PORT: t.String({ minLength: 1, error: "PORT is required" }),
       JWT_SECRET: t.String({ minLength: 1, error: "JWT_SECRET is required" }),
       DATABASE_URL: t.String({
         minLength: 1,
@@ -95,8 +94,14 @@ const app = new Elysia()
       path: "/api/docs",
     }),
   )
-  .onError(({ code, set }) => {
+  .onError(({ code, error, set }) => {
     switch (code) {
+      case "UNKNOWN":
+        return {
+          success: false,
+          message: "Terjadi kesalahan",
+          error: error.message,
+        };
       case "NOT_FOUND":
         set.status = 404;
         return {
@@ -104,16 +109,17 @@ const app = new Elysia()
           message: "Terjadi kesalahan",
           error: "Endpoint tidak ditemukan",
         };
+      case "VALIDATION":
+        set.status = 400;
+        return {
+          success: false,
+          message: "Terjadi kesalahan",
+          error: error.all
+            .map((item) => ("schema" in item ? item.schema.error : item))
+            .filter(Boolean)
+            .join(", "),
+        };
     }
-  })
-  .get("/", () => {
-    return {
-      success: true,
-      message: {
-        app: "Sistem Informasi Manajemen Keuangan RSUD dr. Soewhandie Surabaya",
-        version: 1,
-      },
-    };
   })
   .get(
     "/health-check",
@@ -138,7 +144,7 @@ const app = new Elysia()
       .use(UserRouter)
       .use(LpjRouter),
   )
-  .listen(process.env.BE_PORT || 8080);
+  .listen(process.env.PORT || 8080);
 
 console.log(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`,

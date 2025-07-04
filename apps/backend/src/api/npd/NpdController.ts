@@ -21,65 +21,61 @@ export const NpdController = {
         ...dataNpd
       } = data;
 
-      const rincianNpd = await prisma.$transaction(async (tx) => {
-        const newRincianNpd = await tx.npdRincian.create({
-          data: {
-            ...dataNpd,
-            is_fix: false,
-          },
-          select: {
-            id: true,
-            npd_id: true,
-            pptk_id: true,
-            is_panjar: true,
-            no: true,
-            created_at: true,
-          },
-        });
-
-        await Promise.all(
-          listMapping.map(async (mappingData) => {
-            const mapItem = await tx.itemRincianNpd.create({
-              data: {
-                ...mappingData,
-                npd_rincian_id: newRincianNpd.id,
-              },
-              select: {
-                id: true,
-                rincian_objek_id: true,
-              },
-            });
-
-            await tx.pencairan.createMany({
-              data: listPencairan.map((pencairan) => ({
-                ...pencairan,
-                item_rincian_npd_id: mapItem.id,
-              })),
-            });
-
-            const realisasi = await prisma.pencairan.aggregate({
-              where: {
-                item_rincian_npd: {
-                  rincian_objek_id: mapItem.rincian_objek_id,
-                },
-                deleted_at: null,
-              },
-              _sum: {
-                nominal: true,
-              },
-            });
-
-            await prisma.rincianObjek.update({
-              where: { id: mapItem.rincian_objek_id },
-              data: {
-                nominal_realisasi: realisasi._sum.nominal || 0n,
-              },
-            });
-          }),
-        );
-
-        return newRincianNpd;
+      const rincianNpd = await prisma.npdRincian.create({
+        data: {
+          ...dataNpd,
+          is_fix: false,
+        },
+        select: {
+          id: true,
+          npd_id: true,
+          pptk_id: true,
+          is_panjar: true,
+          no: true,
+          created_at: true,
+        },
       });
+
+      await Promise.all(
+        listMapping.map(async (mappingData) => {
+          const mapItem = await prisma.itemRincianNpd.create({
+            data: {
+              ...mappingData,
+              npd_rincian_id: rincianNpd.id,
+            },
+            select: {
+              id: true,
+              rincian_objek_id: true,
+            },
+          });
+
+          await prisma.pencairan.createMany({
+            data: listPencairan.map((pencairan) => ({
+              ...pencairan,
+              item_rincian_npd_id: mapItem.id,
+            })),
+          });
+
+          const realisasi = await prisma.pencairan.aggregate({
+            where: {
+              item_rincian_npd: {
+                rincian_objek_id: mapItem.rincian_objek_id,
+              },
+              deleted_at: null,
+            },
+            _sum: {
+              nominal: true,
+            },
+          });
+
+          await prisma.rincianObjek.update({
+            where: { id: mapItem.rincian_objek_id },
+            data: {
+              nominal_realisasi: realisasi._sum.nominal || 0n,
+            },
+          });
+        }),
+      );
 
       return ResponseBuilder.success(
         "Rincian NPD berhasil ditambahkan",
@@ -450,81 +446,75 @@ export const NpdController = {
         ...npd
       } = data;
 
-      const rincianNpd = await prisma.$transaction(async (tx) => {
-        const selectedRincianNpd = prisma.npdRincian.update({
-          where: { id, deleted_at: null },
-          data: npd,
-          select: {
-            id: true,
-            no: true,
-            is_fix: true,
-            is_panjar: true,
-            keperluan: true,
-            alasan_batal: true,
-            batal_pada: true,
-            updated_at: true,
-          },
-        });
-
-        if (listPencairan && listPencairan.length > 0) {
-          listPencairan.map(async ({ id, nominal }) => {
-            await tx.pencairan.update({
-              where: { id, deleted_at: null },
-              data: { nominal },
-            });
-          });
-        }
-
-        if (listMapping && listMapping.length > 0) {
-          await prisma.$transaction(async (mappingTx) => {
-            listMapping.map(async (mapping) => {
-              const {
-                rincian_objek_id: rincianObjekId,
-                list_pencairan: listPencairan,
-              } = mapping;
-
-              const mapItem = await mappingTx.itemRincianNpd.create({
-                data: {
-                  rincian_objek_id: rincianObjekId,
-                  npd_rincian_id: id,
-                },
-                select: {
-                  id: true,
-                  rincian_objek_id: true,
-                },
-              });
-
-              await mappingTx.pencairan.createMany({
-                data: listPencairan.map((pencairan) => ({
-                  ...pencairan,
-                  item_rincian_npd_id: mapItem.id,
-                })),
-              });
-
-              const realisasi = await mappingTx.pencairan.aggregate({
-                where: {
-                  item_rincian_npd: {
-                    rincian_objek_id: mapItem.rincian_objek_id,
-                  },
-                  deleted_at: null,
-                },
-                _sum: {
-                  nominal: true,
-                },
-              });
-
-              await mappingTx.rincianObjek.update({
-                where: { id: mapItem.rincian_objek_id },
-                data: {
-                  nominal_realisasi: realisasi._sum.nominal || 0n,
-                },
-              });
-            });
-          });
-        }
-
-        return selectedRincianNpd;
+      const rincianNpd = prisma.npdRincian.update({
+        where: { id, deleted_at: null },
+        data: npd,
+        select: {
+          id: true,
+          no: true,
+          is_fix: true,
+          is_panjar: true,
+          keperluan: true,
+          alasan_batal: true,
+          batal_pada: true,
+          updated_at: true,
+        },
       });
+
+      if (listPencairan && listPencairan.length > 0) {
+        listPencairan.map(async ({ id, nominal }) => {
+          await prisma.pencairan.update({
+            where: { id, deleted_at: null },
+            data: { nominal },
+          });
+        });
+      }
+
+      if (listMapping && listMapping.length > 0) {
+        listMapping.map(async (mapping) => {
+          const {
+            rincian_objek_id: rincianObjekId,
+            list_pencairan: listPencairan,
+          } = mapping;
+
+          const mapItem = await prisma.itemRincianNpd.create({
+            data: {
+              rincian_objek_id: rincianObjekId,
+              npd_rincian_id: id,
+            },
+            select: {
+              id: true,
+              rincian_objek_id: true,
+            },
+          });
+
+          await prisma.pencairan.createMany({
+            data: listPencairan.map((pencairan) => ({
+              ...pencairan,
+              item_rincian_npd_id: mapItem.id,
+            })),
+          });
+
+          const realisasi = await prisma.pencairan.aggregate({
+            where: {
+              item_rincian_npd: {
+                rincian_objek_id: mapItem.rincian_objek_id,
+              },
+              deleted_at: null,
+            },
+            _sum: {
+              nominal: true,
+            },
+          });
+
+          await prisma.rincianObjek.update({
+            where: { id: mapItem.rincian_objek_id },
+            data: {
+              nominal_realisasi: realisasi._sum.nominal || 0n,
+            },
+          });
+        });
+      }
 
       if (!rincianNpd) {
         return ResponseBuilder.failure(

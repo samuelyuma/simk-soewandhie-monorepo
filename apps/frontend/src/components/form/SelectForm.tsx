@@ -2,8 +2,6 @@ import { Bookmark } from "lucide-react";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 
-import { cn } from "@/lib/utils";
-
 import {
   FormControl,
   FormDescription,
@@ -19,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
 export type SelectFormItems = {
   id: string;

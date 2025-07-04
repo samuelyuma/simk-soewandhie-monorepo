@@ -1,12 +1,10 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { FormProvider, useForm } from "react-hook-form";
 
+import { useLoginMutation } from "@/api/mutation/login";
 import InputForm from "@/components/form/InputForm";
 import { Button } from "@/components/ui/button";
-
 import type { AuthRequest } from "@/types/user";
-
-import { useLoginMutation } from "@/api/mutation/login";
 
 export const Route = createFileRoute("/(auth)/login")({
   beforeLoad: ({ context }) => {

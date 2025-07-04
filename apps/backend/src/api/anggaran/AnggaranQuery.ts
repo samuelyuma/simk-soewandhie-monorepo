@@ -1,27 +1,8 @@
 import { Prisma } from "@/generated/prisma";
 
-const filterAndSearchQuery = (
-  filterBy?: string,
-  filterValue?:
-    | string
-    | number
-    | boolean
-    | Date
-    | (string | number | boolean | Date)[],
-  search?: string,
-) => {
-  return search
-    ? Prisma.sql`AND (r.nama ILIKE ${`%${search}%`} OR $r.kode ILIKE ${`%${search}%`} OR ro.nama ILIKE ${`%${search}%`})`
-    : filterBy && filterValue
-      ? filterBy === "event_id"
-        ? Prisma.sql`AND r.event_id = ${Number(filterValue)}`
-        : Prisma.sql`AND r.${Prisma.raw(filterBy)} = ${filterValue}`
-      : Prisma.sql``;
-};
-
 export const AnggaranQuery = {
-  getAllKegiatan: {
-    totalRealized: () => Prisma.sql`
+  allKegiatan: {
+    totalRealisasi: () => Prisma.sql`
 		SELECT
 			k.id as kegiatan_id,
 			COALESCE(SUM(CAST(ro.nominal_realisasi AS BIGINT)), 0) AS total_belanja_kegiatan
@@ -44,7 +25,7 @@ export const AnggaranQuery = {
 		GROUP BY k.id
 	`,
   },
-  getKegiatanById: {
+  kegiatanById: {
     totalItems: (id: number) => Prisma.sql`
 		SELECT COUNT(DISTINCT sk.id) as count
 		FROM kegiatan k
@@ -54,7 +35,7 @@ export const AnggaranQuery = {
 		WHERE k.id = ${id}
 			AND k.deleted_at IS NULL
 	`,
-    totalRealized: (id: number) => Prisma.sql`
+    totalRealisasi: (id: number) => Prisma.sql`
 		SELECT
 			COALESCE(SUM(CAST(ro.nominal_realisasi AS BIGINT)), 0) AS total_belanja_kegiatan
 		FROM kegiatan k
@@ -74,7 +55,7 @@ export const AnggaranQuery = {
 		WHERE k.id = ${id}
 			AND k.deleted_at IS NULL
 	`,
-    totalRealizedBySubKegiatan: (kegiatanId: number) => Prisma.sql`
+    totalRealisasiBySubKegiatan: (kegiatanId: number) => Prisma.sql`
 		SELECT
             sk.id as sub_kegiatan_id,
             COALESCE(SUM(CAST(ro.nominal_realisasi AS BIGINT)), 0) AS total_belanja_sub_kegiatan
@@ -97,8 +78,8 @@ export const AnggaranQuery = {
         GROUP BY sk.id
 	`,
   },
-  getAllSubKegiatan: {
-    totalRealized: () => Prisma.sql`
+  allSubKegiatan: {
+    totalRealisasi: () => Prisma.sql`
 		SELECT
 			sk.id as sub_kegiatan_id,
 			COALESCE(SUM(CAST(ro.nominal_realisasi AS BIGINT)), 0) AS total_belanja_sub_kegiatan
@@ -119,7 +100,7 @@ export const AnggaranQuery = {
 		GROUP BY sk.id
 	`,
   },
-  getSubKegiatanById: {
+  subKegiatanById: {
     totalItems: (
       id: number,
       filterBy?: string,
@@ -137,9 +118,14 @@ export const AnggaranQuery = {
 			LEFT JOIN rincian_objek ro ON ro.rekening_id = r.id AND ro.deleted_at IS NULL
 		WHERE sk.id = ${id}
 			AND sk.deleted_at IS NULL
-			${filterAndSearchQuery(filterBy, filterValue, search)}
+			${search ? Prisma.sql`AND (r.nama ILIKE ${`%${search}%`} OR r.kode ILIKE ${`%${search}%`} OR ro.nama ILIKE ${`%${search}%`})` : Prisma.sql``}
+			${
+        filterBy && typeof filterValue !== "undefined"
+          ? Prisma.sql`AND ${Prisma.raw(`r."${filterBy}"`)} = ${Number(filterValue)}`
+          : Prisma.sql``
+      }
 	`,
-    totalRealized: (
+    totalRealisasi: (
       id: number,
       filterBy?: string,
       filterValue?:
@@ -157,7 +143,12 @@ export const AnggaranQuery = {
 			LEFT JOIN rincian_objek ro ON ro.rekening_id = r.id AND ro.deleted_at IS NULL
 		WHERE sk.id = ${id}
 			AND sk.deleted_at IS NULL
-			${filterAndSearchQuery(filterBy, filterValue, search)}
+			${search ? Prisma.sql`AND (r.nama ILIKE ${`%${search}%`} OR r.kode ILIKE ${`%${search}%`} OR ro.nama ILIKE ${`%${search}%`})` : Prisma.sql``}
+			${
+        filterBy && typeof filterValue !== "undefined"
+          ? Prisma.sql`AND ${Prisma.raw(`r."${filterBy}"`)} = ${Number(filterValue)}`
+          : Prisma.sql``
+      }
 	`,
     totalAnggaran: (
       id: number,
@@ -177,9 +168,14 @@ export const AnggaranQuery = {
 			LEFT JOIN rincian_objek ro ON ro.rekening_id = r.id AND ro.deleted_at IS NULL
 		WHERE sk.id = ${id}
 			AND sk.deleted_at IS NULL
-			${filterAndSearchQuery(filterBy, filterValue, search)}
+			${search ? Prisma.sql`AND (r.nama ILIKE ${`%${search}%`} OR r.kode ILIKE ${`%${search}%`} OR ro.nama ILIKE ${`%${search}%`})` : Prisma.sql``}
+			${
+        filterBy && typeof filterValue !== "undefined"
+          ? Prisma.sql`AND ${Prisma.raw(`r."${filterBy}"`)} = ${Number(filterValue)}`
+          : Prisma.sql``
+      }
 	`,
-    totalRealizedByRekening: (subKegiatanId: number) => Prisma.sql`
+    totalRealisasiByRekening: (subKegiatanId: number) => Prisma.sql`
 		SELECT
 			r.id as rekening_id,
 			COALESCE(SUM(CAST(ro.nominal_realisasi AS BIGINT)), 0) AS total_belanja_rekening
@@ -200,8 +196,8 @@ export const AnggaranQuery = {
 		GROUP BY r.id
 	`,
   },
-  getAllRekening: {
-    totalRealized: () => Prisma.sql`
+  allRekening: {
+    totalRealisasi: () => Prisma.sql`
 		SELECT
 			r.id as rekening_id,
 			COALESCE(SUM(CAST(ro.nominal_realisasi AS BIGINT)), 0) AS total_belanja_rekening
@@ -220,7 +216,7 @@ export const AnggaranQuery = {
 		GROUP BY r.id
 	`,
   },
-  getRekeningById: {
+  rekeningById: {
     totalItems: (id: number) => Prisma.sql`
 		SELECT COUNT(DISTINCT ro.id) as count
 		FROM rekening r
@@ -228,7 +224,7 @@ export const AnggaranQuery = {
 		WHERE r.id = ${id}
 			AND r.deleted_at IS NULL
 	`,
-    totalRealized: (id: number) => Prisma.sql`
+    totalRealisasi: (id: number) => Prisma.sql`
 		SELECT
 			COALESCE(SUM(CAST(ro.nominal_realisasi AS BIGINT)), 0) AS total_belanja_rekening
 		FROM rekening r
@@ -245,7 +241,7 @@ export const AnggaranQuery = {
 			AND r.deleted_at IS NULL
 	`,
   },
-  getAllRincianObjek: {
+  allRincianObjek: {
     totalRealisasi: (ids: number[]) => {
       if (!ids || ids.length === 0) {
         return Prisma.sql`

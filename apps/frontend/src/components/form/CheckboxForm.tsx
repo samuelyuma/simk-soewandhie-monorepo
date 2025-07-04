@@ -1,7 +1,5 @@
 import { useFormContext } from "react-hook-form";
 
-import { cn } from "@/lib/utils";
-
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   FormControl,
@@ -9,6 +7,7 @@ import {
   FormItem,
   FormLabel,
 } from "@/components/ui/form";
+import { cn } from "@/lib/utils";
 
 type CheckboxFormProps = {
   name: string;

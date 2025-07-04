@@ -1,7 +1,7 @@
 "use client";
 
 import * as ToastPrimitives from "@radix-ui/react-toast";
-import { type VariantProps, cva } from "class-variance-authority";
+import { cva, type VariantProps } from "class-variance-authority";
 import { Check, TriangleAlert, X } from "lucide-react";
 import * as React from "react";
 
@@ -89,7 +89,6 @@ const ToastTitle = React.forwardRef<
     className={cn("flex items-center gap-1 text-sm", className)}
     {...props}
   >
-    <></>
     <div className="flex items-center gap-2.5">
       {variant === "success" ? (
         <>

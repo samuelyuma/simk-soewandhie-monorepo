@@ -1,7 +1,6 @@
 import { queryOptions, useQuery } from "@tanstack/react-query";
 
 import api from "@/lib/axios";
-
 import type { PaginationData, Params } from "@/types/api";
 import type { User } from "@/types/user";
 

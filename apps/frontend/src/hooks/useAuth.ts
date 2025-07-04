@@ -2,10 +2,9 @@ import { router } from "@lib/router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 
-import type { User } from "@/types/user";
-
 import { useLogoutMutation } from "@/api/mutation/logout";
 import { authQueryOptions, useAuthQuery } from "@/api/queries/user";
+import type { User } from "@/types/user";
 
 type AuthState =
   | { user: null; status: "PENDING" }

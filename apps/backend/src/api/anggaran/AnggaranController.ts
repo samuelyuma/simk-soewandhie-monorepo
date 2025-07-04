@@ -216,20 +216,20 @@ export const AnggaranController = {
         );
       }
 
-      const [totalItems, totalRealized, totalNominal] = await Promise.all([
+      const [totalItems, totalRealisasi, totalNominal] = await Promise.all([
         prisma.kegiatan.count({ where }),
         prisma.$queryRaw<
           [{ kegiatan_id: number; total_belanja_kegiatan: bigint }]
-        >(AnggaranQuery.getAllKegiatan.totalRealized()),
+        >(AnggaranQuery.allKegiatan.totalRealisasi()),
         prisma.$queryRaw<
           [{ kegiatan_id: number; total_nominal_kegiatan: bigint }]
-        >(AnggaranQuery.getAllKegiatan.totalAnggaran()),
+        >(AnggaranQuery.allKegiatan.totalAnggaran()),
       ]);
 
       const totalPages = Math.ceil(totalItems / limit);
 
-      const realizedMap = new Map(
-        totalRealized.map((item) => [
+      const realisasiMap = new Map(
+        totalRealisasi.map((item) => [
           item.kegiatan_id,
           Number(item.total_belanja_kegiatan),
         ]),
@@ -243,7 +243,7 @@ export const AnggaranController = {
 
       const data = kegiatan.map((item) => ({
         ...item,
-        total_belanja_kegiatan: realizedMap.get(item.id) || 0,
+        total_belanja_kegiatan: realisasiMap.get(item.id) || 0,
         total_nominal_kegiatan: nominalMap.get(item.id) || 0,
       }));
 
@@ -311,30 +311,30 @@ export const AnggaranController = {
 
       const [
         totalItems,
-        totalRealized,
+        totalRealisasi,
         totalNominal,
-        totalRealizedBySubKegiatan,
+        totalRealisasiBySubKegiatan,
         totalNominalBySubKegiatan,
       ] = await Promise.all([
         prisma.$queryRaw<[{ count: bigint }]>(
-          AnggaranQuery.getKegiatanById.totalItems(id),
+          AnggaranQuery.kegiatanById.totalItems(id),
         ),
         prisma.$queryRaw<[{ total_belanja_kegiatan: bigint }]>(
-          AnggaranQuery.getKegiatanById.totalRealized(id),
+          AnggaranQuery.kegiatanById.totalRealisasi(id),
         ),
         prisma.$queryRaw<[{ total_nominal_kegiatan: bigint }]>(
-          AnggaranQuery.getKegiatanById.totalAnggaran(id),
+          AnggaranQuery.kegiatanById.totalAnggaran(id),
         ),
         prisma.$queryRaw<
           [{ sub_kegiatan_id: number; total_belanja_sub_kegiatan: bigint }]
-        >(AnggaranQuery.getKegiatanById.totalRealizedBySubKegiatan(id)),
+        >(AnggaranQuery.kegiatanById.totalRealisasiBySubKegiatan(id)),
         prisma.$queryRaw<
           [{ sub_kegiatan_id: number; total_nominal_sub_kegiatan: bigint }]
-        >(AnggaranQuery.getKegiatanById.totalAnggaranBySubKegiatan(id)),
+        >(AnggaranQuery.kegiatanById.totalAnggaranBySubKegiatan(id)),
       ]);
 
-      const realizedMap = new Map(
-        totalRealizedBySubKegiatan.map((item) => [
+      const realisasiMap = new Map(
+        totalRealisasiBySubKegiatan.map((item) => [
           item.sub_kegiatan_id,
           Number(item.total_belanja_sub_kegiatan),
         ]),
@@ -351,11 +351,11 @@ export const AnggaranController = {
       const data = {
         ...kegiatan,
         total_belanja_kegiatan:
-          Number(totalRealized[0]?.total_belanja_kegiatan) || 0,
+          Number(totalRealisasi[0]?.total_belanja_kegiatan) || 0,
         total_nominal_kegiatan:
           Number(totalNominal[0]?.total_nominal_kegiatan) || 0,
         list_sub_kegiatan: kegiatan.list_sub_kegiatan.map((subKegiatan) => ({
-          total_belanja_sub_kegiatan: realizedMap.get(subKegiatan.id) || 0,
+          total_belanja_sub_kegiatan: realisasiMap.get(subKegiatan.id) || 0,
           total_nominal_sub_kegiatan: nominalMap.get(subKegiatan.id) || 0,
           ...subKegiatan,
         })),
@@ -493,20 +493,20 @@ export const AnggaranController = {
         );
       }
 
-      const [totalItems, totalRealized, totalNominal] = await Promise.all([
+      const [totalItems, totalRealisasi, totalNominal] = await Promise.all([
         prisma.kegiatan.count({ where }),
         prisma.$queryRaw<
           [{ sub_kegiatan_id: number; total_belanja_sub_kegiatan: bigint }]
-        >(AnggaranQuery.getAllSubKegiatan.totalRealized()),
+        >(AnggaranQuery.allSubKegiatan.totalRealisasi()),
         prisma.$queryRaw<
           [{ sub_kegiatan_id: number; total_nominal_sub_kegiatan: bigint }]
-        >(AnggaranQuery.getAllSubKegiatan.totalAnggaran()),
+        >(AnggaranQuery.allSubKegiatan.totalAnggaran()),
       ]);
 
       const totalPages = Math.ceil(totalItems / limit);
 
-      const realizedMap = new Map(
-        totalRealized.map((item) => [
+      const realisasiMap = new Map(
+        totalRealisasi.map((item) => [
           item.sub_kegiatan_id,
           Number(item.total_belanja_sub_kegiatan),
         ]),
@@ -520,7 +520,7 @@ export const AnggaranController = {
 
       const data = subKegiatan.map((item) => ({
         ...item,
-        total_belanja_sub_kegiatan: realizedMap.get(item.id) || 0,
+        total_belanja_sub_kegiatan: realisasiMap.get(item.id) || 0,
         total_nominal_sub_kegiatan: nominalMap.get(item.id) || 0,
       }));
 
@@ -565,6 +565,12 @@ export const AnggaranController = {
             },
           ],
         }),
+        ...(filterBy &&
+          filterValue && {
+            [filterBy]: {
+              equals: Number(filterValue),
+            },
+          }),
       };
 
       const subKegiatan = await prisma.subKegiatan.findUnique({
@@ -603,13 +609,13 @@ export const AnggaranController = {
 
       const [
         totalItems,
-        totalRealized,
+        totalRealisasi,
         totalNominal,
-        totalRealizedByRekening,
+        totalRealisasiByRekening,
         totalNominalByRekening,
       ] = await Promise.all([
         prisma.$queryRaw<[{ count: bigint }]>(
-          AnggaranQuery.getSubKegiatanById.totalItems(
+          AnggaranQuery.subKegiatanById.totalItems(
             id,
             filterBy,
             filterValue,
@@ -617,7 +623,7 @@ export const AnggaranController = {
           ),
         ),
         prisma.$queryRaw<[{ total_belanja_sub_kegiatan: bigint }]>(
-          AnggaranQuery.getSubKegiatanById.totalRealized(
+          AnggaranQuery.subKegiatanById.totalRealisasi(
             id,
             filterBy,
             filterValue,
@@ -625,7 +631,7 @@ export const AnggaranController = {
           ),
         ),
         prisma.$queryRaw<[{ total_nominal_sub_kegiatan: bigint }]>(
-          AnggaranQuery.getSubKegiatanById.totalAnggaran(
+          AnggaranQuery.subKegiatanById.totalAnggaran(
             id,
             filterBy,
             filterValue,
@@ -634,16 +640,16 @@ export const AnggaranController = {
         ),
         prisma.$queryRaw<
           [{ rekening_id: number; total_belanja_rekening: bigint }]
-        >(AnggaranQuery.getSubKegiatanById.totalRealizedByRekening(id)),
+        >(AnggaranQuery.subKegiatanById.totalRealisasiByRekening(id)),
         prisma.$queryRaw<
           [{ rekening_id: number; total_nominal_rekening: bigint }]
-        >(AnggaranQuery.getSubKegiatanById.totalAnggaranByRekening(id)),
+        >(AnggaranQuery.subKegiatanById.totalAnggaranByRekening(id)),
       ]);
 
       const totalPages = Math.ceil(Number(totalItems[0].count) / limit);
 
       const realizedMap = new Map(
-        totalRealizedByRekening.map((item) => [
+        totalRealisasiByRekening.map((item) => [
           item.rekening_id,
           Number(item.total_belanja_rekening),
         ]),
@@ -658,7 +664,7 @@ export const AnggaranController = {
       const data = {
         ...subKegiatan,
         total_belanja_sub_kegiatan:
-          Number(totalRealized[0]?.total_belanja_sub_kegiatan) || 0,
+          Number(totalRealisasi[0]?.total_belanja_sub_kegiatan) || 0,
         total_nominal_sub_kegiatan:
           Number(totalNominal[0]?.total_nominal_sub_kegiatan) || 0,
         list_rekening: subKegiatan.list_rekening.map((rekening) => ({
@@ -812,20 +818,20 @@ export const AnggaranController = {
         );
       }
 
-      const [totalItems, totalRealized, totalNominal] = await Promise.all([
+      const [totalItems, totalRealisasi, totalNominal] = await Promise.all([
         prisma.kegiatan.count({ where }),
         prisma.$queryRaw<
           [{ rekening_id: number; total_belanja_rekening: bigint }]
-        >(AnggaranQuery.getAllRekening.totalRealized()),
+        >(AnggaranQuery.allRekening.totalRealisasi()),
         prisma.$queryRaw<
           [{ rekening_id: number; total_nominal_rekening: bigint }]
-        >(AnggaranQuery.getAllRekening.totalAnggaran()),
+        >(AnggaranQuery.allRekening.totalAnggaran()),
       ]);
 
       const totalPages = Math.ceil(totalItems / limit);
 
-      const realizedMap = new Map(
-        totalRealized.map((item) => [
+      const realisasiMap = new Map(
+        totalRealisasi.map((item) => [
           item.rekening_id,
           Number(item.total_belanja_rekening),
         ]),
@@ -839,7 +845,7 @@ export const AnggaranController = {
 
       const data = rekening.map((item) => ({
         ...item,
-        total_belanja_rekening: realizedMap.get(item.id) || 0,
+        total_belanja_rekening: realisasiMap.get(item.id) || 0,
         total_nominal_rekening: nominalMap.get(item.id) || 0,
       }));
 
@@ -921,15 +927,15 @@ export const AnggaranController = {
         );
       }
 
-      const [totalItems, totalRealized, totalNominal] = await Promise.all([
+      const [totalItems, totalRealisasi, totalNominal] = await Promise.all([
         prisma.$queryRaw<[{ count: bigint }]>(
-          AnggaranQuery.getRekeningById.totalItems(id),
+          AnggaranQuery.rekeningById.totalItems(id),
         ),
         prisma.$queryRaw<[{ total_belanja_rekening: bigint }]>(
-          AnggaranQuery.getRekeningById.totalRealized(id),
+          AnggaranQuery.rekeningById.totalRealisasi(id),
         ),
         prisma.$queryRaw<[{ total_nominal_rekening: bigint }]>(
-          AnggaranQuery.getRekeningById.totalAnggaran(id),
+          AnggaranQuery.rekeningById.totalAnggaran(id),
         ),
       ]);
 
@@ -938,7 +944,7 @@ export const AnggaranController = {
       const data = {
         ...rekening,
         total_belanja_rekening:
-          Number(totalRealized[0]?.total_belanja_rekening) || 0,
+          Number(totalRealisasi[0]?.total_belanja_rekening) || 0,
         total_nominal_rekening:
           Number(totalNominal[0]?.total_nominal_rekening) || 0,
       };

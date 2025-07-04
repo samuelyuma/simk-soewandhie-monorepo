@@ -18,32 +18,28 @@ export const UserController = {
     try {
       const { list_jabatan: listJabatan, ...userData } = data;
 
-      const user = await prisma.$transaction(async (tx) => {
-        const newUser = await tx.user.create({
-          data: {
-            ...userData,
-            id: nanoid(18),
-            password: await Bun.password.hash(data.password, "bcrypt"),
-            role: "ADMIN",
-          },
-          select: {
-            id: true,
-            nama: true,
-            created_at: true,
-          },
-        });
-
-        if (listJabatan && listJabatan.length > 0) {
-          listJabatan.map(
-            async ({ jabatan_id }) =>
-              await tx.userJabatan.create({
-                data: { user_id: newUser.id, jabatan_id },
-              }),
-          );
-        }
-
-        return newUser;
+      const user = await prisma.user.create({
+        data: {
+          ...userData,
+          id: nanoid(18),
+          password: await Bun.password.hash(data.password, "bcrypt"),
+          role: "ADMIN",
+        },
+        select: {
+          id: true,
+          nama: true,
+          created_at: true,
+        },
       });
+
+      if (listJabatan && listJabatan.length > 0) {
+        listJabatan.map(
+          async ({ jabatan_id }) =>
+            await prisma.userJabatan.create({
+              data: { user_id: user.id, jabatan_id },
+            }),
+        );
+      }
 
       return ResponseBuilder.success(
         "Pengguna berhasil ditambahkan",

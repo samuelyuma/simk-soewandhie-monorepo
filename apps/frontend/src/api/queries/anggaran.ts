@@ -7,7 +7,6 @@ import { useCallback, useMemo, useRef } from "react";
 
 import api from "@/lib/axios";
 import { createQueryKeys } from "@/lib/createQueryKeys";
-
 import type {
   Events,
   Kegiatan,

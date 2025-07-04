@@ -16,8 +16,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { RincianObjek } from "@/types/anggaran";
-import { Jabatan } from "@/types/user";
+import type { RincianObjek } from "@/types/anggaran";
+import type { Jabatan } from "@/types/user";
+
 import { ScrollArea } from "./scroll-area";
 
 export type ComboboxItems = {

@@ -2,7 +2,6 @@ import { keepPreviousData, queryOptions } from "@tanstack/react-query";
 
 import api from "@/lib/axios";
 import { createQueryKeys } from "@/lib/createQueryKeys";
-
 import type { PaginationData, Params } from "@/types/api";
 import type { Npd, RincianNpdById } from "@/types/npd";
 

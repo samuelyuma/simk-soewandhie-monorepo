@@ -5,7 +5,6 @@ import { useToast } from "@/hooks/useToast";
 import api from "@/lib/axios";
 import { setToken } from "@/lib/cookies";
 import { router } from "@/lib/router";
-
 import type { ApiError, ApiResponse } from "@/types/api";
 import type { AuthRequest, AuthResponse } from "@/types/user";
 

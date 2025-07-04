@@ -12,7 +12,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
 import type { FilterItems, SelectItems } from "@/types/helper";
 
 import { Button } from "../ui/button";

@@ -5,15 +5,16 @@ Adapun dokumentasi API dari proyek ini dapat diakses pada [link berikut](https:/
 
 ## Anggota Kelompok 4
 
-| Nama							  | NRP		   | Peran 	   |
-| ------------------------------- | ---------- | --------- |
-| Samuel Yuma Krismata 			  | 5027221029 | Fullstack |
+| Nama         | NRP     | Peran     |
+| ------------ | ------- | --------- |
+| Samuel Yuma Krismata      | 5027221029 | Fullstack |
 | Muhammad Harvian Dito Syahputra | 5027221039 | Frontend  |
-| Hafiz Akmaldi Santosa 		  | 5027221061 | UI/UX     |
+| Hafiz Akmaldi Santosa     | 5027221061 | UI/UX     |
 
 ## Tech Stack
 
 **Frontend**
+
 - React
 - Typescript
 - Tailwind CSS
@@ -21,6 +22,7 @@ Adapun dokumentasi API dari proyek ini dapat diakses pada [link berikut](https:/
 - Rspack
 
 **Backend**
+
 - Elysia.js
 - Typescript
 - Prisma
@@ -30,6 +32,7 @@ Adapun dokumentasi API dari proyek ini dapat diakses pada [link berikut](https:/
 ## Persyaratan
 
 Pastikan tools berikut sudah terinstal di perangkat anda:
+
 - [Bun](https://bun.sh/docs/installation)
 - [Docker](https://docs.docker.com/engine/install/)
 
@@ -88,5 +91,6 @@ Untuk keluar dari container, gunakan command `exit`
 ### Login
 
 Gunakan kredensial berikut untuk login:
+
 - **username**: superadmin, **password**: superadmin1234
 - **username**: admin, **password**: admin4321

@@ -4,8 +4,8 @@ import { Trash2 } from "lucide-react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import * as v from "valibot";
 
-import { useDialogAndModal } from "@/hooks/useDialogAndModal";
-
+import { useCreateUserMutation } from "@/api/mutation/user/create";
+import { jabatanListOptionsInfinite } from "@/api/queries/jabatan";
 import InputForm from "@/components/form/InputForm";
 import TitleSeparator from "@/components/layout/TitleSeparator";
 import { Button } from "@/components/ui/button";
@@ -17,11 +17,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
-
+import { useDialogAndModal } from "@/hooks/useDialogAndModal";
 import type { Jabatan } from "@/types/user";
-
-import { useCreateUserMutation } from "@/api/mutation/user/create";
-import { jabatanListOptionsInfinite } from "@/api/queries/jabatan";
 
 interface FormData {
   nama: string;

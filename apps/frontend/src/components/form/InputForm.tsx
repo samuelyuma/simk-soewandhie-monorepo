@@ -1,8 +1,6 @@
 import type { JSX, RefAttributes } from "react";
 import { useFormContext } from "react-hook-form";
 
-import { cn } from "@/lib/utils";
-
 import { PasswordInput } from "@/components/ui//password-input";
 import {
   FormControl,
@@ -13,6 +11,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input, type InputProps } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 type InputFormProps = {
   type?: string;

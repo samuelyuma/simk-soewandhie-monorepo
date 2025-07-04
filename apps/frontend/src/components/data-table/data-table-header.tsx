@@ -1,9 +1,8 @@
 import { flexRender, type Table } from "@tanstack/react-table";
 import { ChevronDown } from "lucide-react";
 
-import { cn } from "@/lib/utils";
-
 import { TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 
 import type { DataTableSubClassNames } from "./data-table-static";
 

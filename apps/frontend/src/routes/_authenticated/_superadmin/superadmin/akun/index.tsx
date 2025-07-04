@@ -4,18 +4,15 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { Edit } from "lucide-react";
 import { useState } from "react";
 
-import { useDataTableServer } from "@/hooks/useDataTableServer";
-import { useDialogAndModal } from "@/hooks/useDialogAndModal";
-
+import { userListOptions } from "@/api/queries/user";
 import DataTableServer from "@/components/data-table/data-table-server";
 import PageHeader from "@/components/layout/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-
-import type { User } from "@/types/user";
-
-import { userListOptions } from "@/api/queries/user";
 import { SuperadminBreadcrumb } from "@/constant/breadcrumb";
+import { useDataTableServer } from "@/hooks/useDataTableServer";
+import { useDialogAndModal } from "@/hooks/useDialogAndModal";
+import type { User } from "@/types/user";
 
 import ModalAddUser from "./-components/modal-add-user";
 import ModalUpdateUser from "./-components/modal-update-user";

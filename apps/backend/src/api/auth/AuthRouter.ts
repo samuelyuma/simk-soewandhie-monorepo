@@ -125,6 +125,28 @@ export const AuthRouter = (app: Elysia) => {
           },
         },
       );
+      auth.use(authPlugin).post(
+        "/logout",
+        async ({ cookie, set }) => {
+          cookie["e-payment"].remove();
+          set.status = 200;
+          return ResponseBuilder.success("Logout berhasil");
+        },
+        {
+          auth: {},
+          tags: ["Auth"],
+          detail: {
+            summary: "Logout",
+            description: "Logout to remove existing JWT cookie.",
+          },
+          response: {
+            200: ResponseSchema.success("Logout berhasil"),
+            401: ResponseSchema.failure("Token tidak ditemukan"),
+            403: ResponseSchema.failure("Token tidak valid"),
+            500: ResponseSchema.failure(),
+          },
+        },
+      );
 
       return auth;
     });
